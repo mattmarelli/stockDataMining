@@ -5,7 +5,7 @@ from os import walk
 
 if __name__ == "__main__":
     startYear = 1999
-    endYear = 2005
+    endYear = 2000
     for root, dirs, filenames in walk('Stocks/'):
         for stock in filenames:
             stockData = np.loadtxt(fname = 'Stocks/' + str(stock), delimiter = ',', dtype = str)
