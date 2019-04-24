@@ -44,6 +44,43 @@ def apriori(D,s,k):
         # TODO figure out indexing of subsets and itemsets
 
 
+# takes a tuple T and returns a hashed index
+def pcy_hash(T,n):
+    # base case if only one element in in tuple
+    if n == 1:
+        return T[0]
+    index = 0
+    # TODO implement hash function
+    return 0
+
+
+# Associative rule mining for dataset D with
+# and s is support for k tuples
+def pcy(D,s,k):
+
+    n = len(np.unique(D))
+    buckets = np.zeros(
+        shape=(n//2), dtype=int)  
+
+    # helper function increments buckets
+    # given an array of hash values
+    @np.vectorize
+    def increment_buckets(index):
+        buckets[index] += 1
+
+    # loop through finding frequent 
+    # k-tuples of support s
+    for i in range(k):
+        for d in D:
+            # generate canidate tuples
+            combos = chain.from_iterable(combinations(d,i))
+            combos = np.fromiter(combos,dtype=int)
+            combos = combos.reshape((len(combos) // i),i)
+            # hash each canidate tuple in combos and increment bucket
+            hashed = np.where(combos,pcy_hash(combos,(n // i)),-1)
+            increment_buckets(hashed)            
+
+
 # TODO additional preprocessing dataset
 # encode stocks to np.uint16 index
 if __name__ == '__main__':
