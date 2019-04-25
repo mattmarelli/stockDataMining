@@ -1,8 +1,6 @@
 from itertools import chain
 from itertools import combinations
 import numpy as np
-import scipy as sp
-
 
 # Associative rule mining for dataset D with
 # and s is support for k tuples
@@ -44,23 +42,30 @@ def apriori(D,s,k):
         # TODO figure out indexing of subsets and itemsets
 
 
+def read_dataset(filename):
+    f = open(filename, 'r')
+    dataset = []
+    for line in f.readlines():
+        dataset.append(line.replace(' \n', '').split(' '))
+    f.close()
+    return dataset
+
+
 # takes a tuple T and returns a hashed index
 def pcy_hash(T,n):
-    # base case if only one element in in tuple
-    if n == 1:
-        return T[0]
-    index = 0
-    # TODO implement hash function
-    return 0
+    # TODO perhaps write a better hash 
+    index = sum([hash(t) for t in T])
+    index = index % n
+    return index
 
 
 # Associative rule mining for dataset D with
 # and s is support for k tuples
 def pcy(D,s,k):
-
     n = len(np.unique(D))
     buckets = np.zeros(
         shape=(n//2), dtype=int)  
+    bitmap = None
 
     # helper function increments buckets
     # given an array of hash values
@@ -70,18 +75,20 @@ def pcy(D,s,k):
 
     # loop through finding frequent 
     # k-tuples of support s
-    for i in range(k):
+    for i in range(1,k+1):
         for d in D:
             # generate canidate tuples
             combos = chain.from_iterable(combinations(d,i))
-            combos = np.fromiter(combos,dtype=int)
+            combos = np.fromiter(combos,dtype=str)
             combos = combos.reshape((len(combos) // i),i)
             # hash each canidate tuple in combos and increment bucket
             hashed = np.where(combos,pcy_hash(combos,(n // i)),-1)
-            increment_buckets(hashed)            
+            increment_buckets(hashed)
+            bitmap = np.where(buckets > s,1,0)
 
 
 # TODO additional preprocessing dataset
 # encode stocks to np.uint16 index
 if __name__ == '__main__':
-    pass
+    D = read_dataset('data/browsingdata_50baskets.txt')
+    pcy(D,4,2)
