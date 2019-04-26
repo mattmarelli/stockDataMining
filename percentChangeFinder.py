@@ -6,9 +6,9 @@ from os import walk
 if __name__ == "__main__":
     startYear = 2012
     endYear = 2017
-    for root, dirs, filenames in walk('Stocks/Stocks/'):
+    for root, dirs, filenames in walk('Stocks/'):
         for stock in filenames:
-            stockData = np.loadtxt(fname = 'Stocks/Stocks/' + str(stock), delimiter = ',', dtype = str)
+            stockData = np.loadtxt(fname = 'Stocks/' + str(stock), delimiter = ',', dtype = str, encoding='utf-8')
             stockData = stockData[1:]
             date = stockData[:,0]
             firstDate = date[0]
@@ -47,4 +47,4 @@ if __name__ == "__main__":
                     output[:,1] = outputList[:,1].astype(str)
                     # temp = stock.split('.')
                     fileName = "StocksCleaned/" + stock.split('.')[0] + 'DailyChange.txt'
-                    np.savetxt(fname = fileName, X = output, fmt='%s, %s', delimiter= ',', encoding = 'utf8')
+                    np.savetxt(fname = fileName, X = output, fmt='%s, %s', delimiter= ',', encoding = 'utf-8')
