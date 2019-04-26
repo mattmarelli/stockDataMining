@@ -1,15 +1,7 @@
 from itertools import chain
 from itertools import combinations
 import numpy as np
-
-
-def read_dataset(filename):
-    f = open(filename, 'r')
-    dataset = []
-    for line in f.readlines():
-        dataset.append(line.replace(' \n', '').split(' '))
-    f.close()
-    return dataset
+import scipy.sparse as sp
 
 
 # takes a tuple T and returns a hashed index
@@ -29,8 +21,8 @@ def combinations(A,n):
     return combos
 
 
-# Associative rule mining for dataset D with
-# and s is support for k tuples
+# Associative rule mining for dataset D as a 
+# sparse marix where s is support for k tuples
 def pcy(D,s,k):
     n = len(np.unique(D))
     buckets = np.zeros(
@@ -45,7 +37,7 @@ def pcy(D,s,k):
 
     # loop through finding frequent 
     # k-tuples of support s
-    for i in range(1,k+1):
+    for i in range(1, (2*k)+1):
         for basket in D:
             # generate canidate tuples
             canidates = combinations(basket,i)
@@ -66,5 +58,6 @@ def pcy(D,s,k):
 if __name__ == '__main__':
     # set support to 860 such that stocks are similar to
     # are 70 percent of the days in the last five years
-    D = read_dataset('data/browsingdata_50baskets.txt')
+    D = np.loadtxt('data/basketsenum.txt',dtype=int,delimiter=',')
+    D = sp.csr_matrix(D)
     pcy(D,4,2)
