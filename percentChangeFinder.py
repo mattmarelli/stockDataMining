@@ -6,11 +6,14 @@ from os import walk
 if __name__ == "__main__":
     startYear = 1999
     endYear = 2000
-    for root, dirs, filenames in walk('Stocks/'):
+    for root, dirs, filenames in walk('Stocks/Stocks/'):
         for stock in filenames:
-            stockData = np.loadtxt(fname = 'Stocks/' + str(stock), delimiter = ',', dtype = str)
+            stockData = np.loadtxt(fname = 'Stocks/Stocks/' + str(stock), delimiter = ',', dtype = str)
             stockData = stockData[1:]
             date = stockData[:,0]
+            # firstDate = date[0]
+            # firstYear = firstDate[:4]
+            # if int(firstYear) == startYear + 1:
             count = 0
             validYear = False
             oneDay = ""
@@ -19,7 +22,7 @@ if __name__ == "__main__":
                 if count % 7 == 0:
                     oneDay = str(lineOfData)
                     year = oneDay[:4]
-                    if int(year) < endYear and int(year) > startYear:
+                    if int(year) < endYear + 1 and int(year) > startYear:
                         validYear = True
                     else:
                         validYear = False

@@ -4,7 +4,6 @@ import numpy as np
 if __name__ == "__main__":
     stockBaskets = {} 
     for root, dirs, filenames in walk('StocksCleaned/'):
-        # print(filenames)
         for stock in filenames:
             stockName = str(stock).split('D')[0]
             stockData = np.loadtxt(fname = 'StocksCleaned/' + str(stock), delimiter = ',', dtype = str)
@@ -41,8 +40,15 @@ if __name__ == "__main__":
                     dayData.update({'3.00+' : magnitudeData})                            
                 stockBaskets.update({str(dataPoint[0]) : dayData})
     # print(stockBaskets)
+    f = open("baskets.txt", "a+")
     for key in stockBaskets.keys():
         for secondKey in sorted(stockBaskets.get(key)):
-            print(str(key) + ", " +  str(secondKey) + ": " + str(stockBaskets.get(key).get(secondKey)))
+            # f.write(str(key) + ", " +  str(secondKey) + ": " + str(stockBaskets.get(key).get(secondKey)))
+            f.write(str(stockBaskets.get(key).get(secondKey)) + "\n")
+            
+
+            
+            
+
         
             
