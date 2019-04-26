@@ -5,18 +5,24 @@ import scipy.sparse as sp
 
 
 # takes a tuple T and returns a hashed index
-def pcy_hash(T,n):
-    # TODO perhaps write a better hash 
-    index = sum([hash(t) for t in T])
+def pcy_hash(n,T):
+
+    @np.vectorize
+    def hash_items(item):
+        return hash(item)
+
+    # TODO perhaps write a better hash
+    indices = hash_items(T)
+    index = np.sum(indices)
     index = index % n
     return index
 
 
 #returns all possible combinations 
 # within array A of size n
-def combinations(A,n):
-    combos = chain.from_iterable(combinations(d,n))
-    combos = np.fromiter(combos,dtype=str)
+def itemcombos(A,n):
+    combos = chain.from_iterable(combinations(A,n))
+    combos = np.fromiter(combos,dtype=int)
     combos = combos.reshape((len(combos) // n),n)
     return combos
 
@@ -24,9 +30,10 @@ def combinations(A,n):
 # Associative rule mining for dataset D as a 
 # sparse marix where s is support for k tuples
 def pcy(D,s,k):
-    n = len(np.unique(D))
+    rows = D.shape[0] # number of baskets
+    cols = D.shape[1] # number of items
     buckets = np.zeros(
-        shape=(n//2), dtype=int)  
+        shape=(cols//2), dtype=int)  
     bitmap = None
 
     # helper function increments buckets
@@ -37,20 +44,26 @@ def pcy(D,s,k):
 
     # loop through finding frequent 
     # k-tuples of support s
-    for i in range(1, (2*k)+1):
-        for basket in D:
-            # generate canidate tuples
-            canidates = combinations(basket,i)
-            for candidate in canidates:
-                combos = combinations(candidate,(i-1))
-                # hash each combination within candidate to check if they
-                indices = np.where(combos,pcy_hash(combos,(n // i)),-1)
+    for i in range(1, (2*k)):
+        if (i % 2 == 1):
+            j = (i // 2) + 2
+            for r in range(rows):
 
+                basket = D[r,:]
+                basket = basket.toarray()
+                basket = np.argwhere(basket == 1)[:,1]
 
-            # hash each canidate tuple in canidates and increment bucket
-            
-            increment_buckets(hashed)
+                # generate canidate tuples
+                canidates = itemcombos(basket,j)
+
+                # hash each canidate tuple in canidates and increment bucket
+                hash_tuple = lambda x: pcy_hash(len(buckets), x)
+                hash_indices = np.apply_along_axis(hash_tuple,1,canidates)
+                increment_buckets(hash_indices)
             bitmap = np.where(buckets > s,1,0)
+        else:
+            # TODO remove non frequent items
+            pass
 
 
 # TODO additional preprocessing dataset
