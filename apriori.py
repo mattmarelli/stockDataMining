@@ -26,6 +26,8 @@ def pcy_hash(n,T):
 # made up of frequent combos in S
 def itemcombos(A,n,S):
 
+    # filter combos that are not made from 
+    # truly frequent tuples
     def filter_tuple(T):
         prev = chain.from_iterable(combinations(T,n-1))
         prev = np.fromiter(prev,dtype=int)
@@ -51,18 +53,24 @@ def pcy(D,s,k):
     bucket_size = comb(cols,2) // 2
     true_frequent = np.arange(1,cols+1)
 
-    # helper function increments buckets
-    # given an array of hash values
+    # increments buckets given
+    # an array of hash values
     @np.vectorize
     def increment_buckets(index):
         buckets[index] += 1
+
+    # check if tuple T hashes to frequent bucket
+    @np.vectorize
+    def hashto(T, indices,n):
+        if np.isin(pcy_hash(T,n),incices)[0]:
+            return T
+        
 
     # loop through finding frequent 
     # k-tuples of support s
     for i in range(1, (2*k)):
         if (i % 2 == 1):
             j = (i // 2) + 2
-            # Hard coded as 505 choose 2 divided by 4 right now must change later
             buckets = np.zeros(
                 shape=(comb(len(true_frequent),j,exact=True) // 2), dtype=int)
             for r in range(rows):
@@ -72,6 +80,7 @@ def pcy(D,s,k):
                 basket = basket.toarray()
                 basket = np.argwhere(basket == 1)[:,1]
 
+                # no possible combo can be frequent, so skip
                 if len(basket) <= j:
                     continue
 
@@ -97,7 +106,6 @@ def pcy(D,s,k):
                 delimiter=',',
                 encoding='utf-8')
             print(bitmap.shape)
-            break
         else:
             for r in range(rows):
                 print('count:%i' % (r))
@@ -110,16 +118,48 @@ def pcy(D,s,k):
                 
                 # generate canidate tuples
                 canidates = itemcombos(basket,j,true_frequent)
-
+                np.savetxt(
+                    fname='canidates.txt',
+                    X=canidates,
+                    fmt='%i',
+                    delimiter=',',
+                    encoding='utf-8')
                 # hash each canidate tuple in canidates and increment bucket
                 hash_tuple = lambda x: pcy_hash(len(buckets), x)
+                
                 hash_indices = np.apply_along_axis(hash_tuple,1,canidates)
-                canidate_indices = np.argwhere(bitmap[hash_indices] == 1)
-                
+                np.savetxt(
+                    fname='hash_indices.txt',
+                    X=hash_indices,
+                    fmt='%i',
+                    delimiter=',',
+                    encoding='utf-8')
+                    
+                # we neeed the hash index where bitmap[index] ==  1
+                hashed_buckets = bitmap[hash_indices]
+                hash_indices = np.argwhere(hashed_buckets == 1)
+
+                np.savetxt(
+                    fname='freq_hash_indices.txt',
+                    X=hash_indices,
+                    fmt='%i',
+                    delimiter=',',
+                    encoding='utf-8')
+                true_canidates = hashto(canidates,hash_indices,n)
+                np.savetxt(
+                    fname='true_canidates.txt',
+                    X=true_canidates,
+                    fmt='%i',
+                    delimiter=',',
+                    encoding='utf-8')
+                break
+
+
+
+
 
 
                 
-
 
 
 if __name__ == '__main__':
