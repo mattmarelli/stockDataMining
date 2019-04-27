@@ -13,7 +13,8 @@ def pcy_hash(n,T):
 
     # TODO perhaps write a better hash
     indices = hash_items(T)
-    index = np.sum(indices)
+    for i in range(len(T)):
+        index += indicies[i]**(i + 4)
     index = index % n
     return index
 
@@ -31,11 +32,8 @@ def itemcombos(A,n):
 # sparse marix where s is support for k tuples
 def pcy(D,s,k):
     rows = D.shape[0] # number of baskets
-    cols = D.shape[1] # number of items
-    buckets = np.zeros(
-        shape=(cols//2), dtype=int)  
+    cols = D.shape[1] # number of items  
     bitmap = None
-
     # helper function increments buckets
     # given an array of hash values
     @np.vectorize
@@ -47,6 +45,9 @@ def pcy(D,s,k):
     for i in range(1, (2*k)):
         if (i % 2 == 1):
             j = (i // 2) + 2
+            # Hard coded as 505 choose 2 divided by 4 right now must change later
+            buckets = np.zeros(
+                shape=(31750), dtype=int)
             for r in range(rows):
                 print('count:%i' % (r))
 
