@@ -48,10 +48,14 @@ def pcy(D,s,k):
         if (i % 2 == 1):
             j = (i // 2) + 2
             for r in range(rows):
+                print('count:%i' % (r))
 
                 basket = D[r,:]
                 basket = basket.toarray()
                 basket = np.argwhere(basket == 1)[:,1]
+
+                if len(basket) <= j:
+                    continue
 
                 # generate canidate tuples
                 canidates = itemcombos(basket,j)
@@ -66,8 +70,6 @@ def pcy(D,s,k):
             pass
 
 
-# TODO additional preprocessing dataset
-# encode stocks to np.uint16 index
 if __name__ == '__main__':
     # set support to 860 such that stocks are similar to
     # are 70 percent of the days in the last five years
