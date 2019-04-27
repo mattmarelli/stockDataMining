@@ -60,9 +60,9 @@ def pcy(D,s,k):
         buckets[index] += 1
 
     # check if tuple T hashes to frequent bucket
-    @np.vectorize
-    def hashto(T, indices,n):
-        if np.isin(pcy_hash(T,n),incices)[0]:
+    def hashto(T,indices,n):
+        A = np.array([pcy_hash(n,T)])
+        if np.isin(A,indices)[0]:
             return T
         
 
@@ -134,10 +134,10 @@ def pcy(D,s,k):
                     fmt='%i',
                     delimiter=',',
                     encoding='utf-8')
-                    
+
                 # we neeed the hash index where bitmap[index] ==  1
-                hashed_buckets = bitmap[hash_indices]
-                hash_indices = np.argwhere(hashed_buckets == 1)
+                freq_buckets = np.argwhere(bitmap == 1)
+                hash_indices = np.intersect1d(freq_buckets,hash_indices)                
 
                 np.savetxt(
                     fname='freq_hash_indices.txt',
@@ -145,7 +145,9 @@ def pcy(D,s,k):
                     fmt='%i',
                     delimiter=',',
                     encoding='utf-8')
-                true_canidates = hashto(canidates,hash_indices,n)
+                
+                check_hash_tuple = lambda x: hashto(x,hash_indices,len(buckets))
+                true_canidates = np.apply_along_axis(check_hash_tuple,1,canidates)
                 np.savetxt(
                     fname='true_canidates.txt',
                     X=true_canidates,
