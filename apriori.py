@@ -64,7 +64,21 @@ def pcy(D,s,k):
                 hash_tuple = lambda x: pcy_hash(len(buckets), x)
                 hash_indices = np.apply_along_axis(hash_tuple,1,canidates)
                 increment_buckets(hash_indices)
+            print(buckets.shape)
+            np.savetxt(
+                fname='buckets.txt',
+                X=buckets,
+                fmt='%i',
+                delimiter=',',
+                encoding='utf-8')
             bitmap = np.where(buckets > s,1,0)
+            np.savetxt(
+                fname='bitmap.txt',
+                X=bitmap,
+                fmt='%i',
+                delimiter=',',
+                encoding='utf-8')
+            print(bitmap.shape)
         else:
             # TODO remove non frequent items
             pass
@@ -73,6 +87,6 @@ def pcy(D,s,k):
 if __name__ == '__main__':
     # set support to 860 such that stocks are similar to
     # are 70 percent of the days in the last five years
-    D = np.loadtxt('data/basketsenum.txt',dtype=int,delimiter=',')
+    D = np.loadtxt('data/basketsenum2017.txt',dtype=int,delimiter=',')
     D = sp.csr_matrix(D)
-    pcy(D,4,2)
+    pcy(D,152,2)

@@ -3,9 +3,13 @@ import numpy as np
 
 if __name__ == "__main__":
 
+    infile = 'data/baskets2017.txt'
+    outfile = 'data/basketsenum2017.txt'
+
     L = np.loadtxt('data/stocklist.txt',delimiter=',',dtype=str)
     L = L[:,0]
-    D = np.zeros(shape=(8582,505),dtype=int)
+    # D = np.zeros(shape=(8582,505),dtype=int)
+    D = np.zeros(shape=(1526,505),dtype=int)
 
     @np.vectorize
     def enum(s):
@@ -17,7 +21,7 @@ if __name__ == "__main__":
         else:
             return -1
 
-    with open('data/baskets.txt') as f:
+    with open(infile) as f:
 
         i = 0
 
@@ -37,7 +41,7 @@ if __name__ == "__main__":
 
     D = D.astype(int)
 
-    np.savetxt(fname='data/basketsenum.txt', 
+    np.savetxt(fname=outfile, 
                 X=D,
                 fmt='%i',
                 delimiter= ',', 
