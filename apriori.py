@@ -77,6 +77,7 @@ def pcy(D,s,k):
             temp[0][0:j] = x
             temp[0][-1] = 1
             S = np.concatenate((S, temp),axis=0)
+        return S
 
     # loop through finding frequent 
     # k-tuples of support s
@@ -152,7 +153,7 @@ def pcy(D,s,k):
                     continue                      
 
                 updatecounts = lambda x: addcounts(canidate_counts,x)
-                np.apply_along_axis(updatecounts,1,true_canidates)
+                candidate_counts = np.apply_along_axis(updatecounts,1,true_canidates)
 
             outfile = 'canidate_counts_%i.txt' % (j)
             np.savetxt(
