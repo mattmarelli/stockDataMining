@@ -52,7 +52,6 @@ def pcy(D,s,k):
     bucket_size = comb(cols,2) // 2
     true_frequent = np.arange(1,cols+1)
     j = 1
-    canidate_counts = np.zeros(shape=(1,(j+1)))
 
     # increments buckets given
     # an array of hash values
@@ -68,16 +67,16 @@ def pcy(D,s,k):
         else:
             return np.zeros(shape=T.shape)
 
-    def addcounts(x):
-        result = np.where((canidate_counts[:,0:j] == tuple(x)).all(axis=1))
+    def addcounts(S,x):
+        result = np.where((S[:,0:j] == tuple(x)).all(axis=1))
         if len(result[0]) > 0:
             index = result[0][0]
-            canidate_counts[index][-1] += 1
+            S[index][-1] += 1
         else:
             temp = np.zeros(shape=(1,j+1))
             temp[0][0:j] = x
             temp[0][-1] = 1
-            canidate_counts = np.concatenate((canidate_counts, temp),axis=0)
+            S = np.concatenate((S, temp),axis=0)
 
     # loop through finding frequent 
     # k-tuples of support s
@@ -152,7 +151,8 @@ def pcy(D,s,k):
                 if len(true_canidates) == 0:
                     continue                      
 
-                np.apply_along_axis(addcounts,1,true_canidates)
+                updatecounts = lambda x: addcounts(canidate_counts,x)
+                np.apply_along_axis(updatecounts,1,true_canidates)
 
             outfile = 'canidate_counts_%i.txt' % (j)
             np.savetxt(
