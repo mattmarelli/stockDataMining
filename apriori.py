@@ -149,7 +149,7 @@ def pcy(D,s,k):
                 true_frequent[k] = np.array(L[k])
             
             outfile = 'true_frequent_%i.txt' % (j)
-
+            canidate_counts = {}
             np.savetxt(
                     fname=outfile,
                     X=true_frequent,
