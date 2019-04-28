@@ -11,8 +11,7 @@ def pcy_hash(n,T):
     @np.vectorize
     def hash_items(item):
         return hash(item)
-
-    # TODO perhaps write a better hash
+    
     indices = hash_items(T)
     index = 0
     for i in range(len(T)):
@@ -52,6 +51,7 @@ def pcy(D,s,k):
     bitmap = None
     bucket_size = comb(cols,2) // 2
     true_frequent = np.arange(1,cols+1)
+    canidate_counts = {}
 
     # increments buckets given
     # an array of hash values
@@ -64,13 +64,22 @@ def pcy(D,s,k):
         A = np.array([pcy_hash(n,T)])
         if np.isin(A,indices)[0]:
             return T
-        
+        else:
+            return np.zeros(shape=T.shape)
+
+    def addcounts(x):
+        if canidate_counts.get(tuple(x)) != None:
+            canidate_counts[tuple(x)] += 1
+        else:
+            canidate_counts[tuple(x)] = 1        
 
     # loop through finding frequent 
     # k-tuples of support s
     for i in range(1, (2*k)):
         if (i % 2 == 1):
             j = (i // 2) + 2
+            if len(true_frequent) < j: 
+                break # itemset mining converged
             buckets = np.zeros(
                 shape=(comb(len(true_frequent),j,exact=True) // 2), dtype=int)
             for r in range(rows):
@@ -91,77 +100,54 @@ def pcy(D,s,k):
                 hash_tuple = lambda x: pcy_hash(len(buckets), x)
                 hash_indices = np.apply_along_axis(hash_tuple,1,canidates)
                 increment_buckets(hash_indices)
-            print(buckets.shape)
-            np.savetxt(
-                fname='buckets1.txt',
-                X=buckets,
-                fmt='%i',
-                delimiter=',',
-                encoding='utf-8')
             bitmap = np.where(buckets > s,1,0)
-            np.savetxt(
-                fname='bitmap1.txt',
-                X=bitmap,
-                fmt='%i',
-                delimiter=',',
-                encoding='utf-8')
-            print(bitmap.shape)
         else:
+            j = (i // 2) + 1
             for r in range(rows):
                 print('count:%i' % (r))
                 basket = D[r,:]
                 basket = basket.toarray()
                 basket = np.argwhere(basket == 1)[:,1]
 
-                if len(basket) <= j:
-                    continue
-                
                 # generate canidate tuples
                 canidates = itemcombos(basket,j,true_frequent)
-                np.savetxt(
-                    fname='canidates.txt',
-                    X=canidates,
-                    fmt='%i',
-                    delimiter=',',
-                    encoding='utf-8')
+
                 # hash each canidate tuple in canidates and increment bucket
                 hash_tuple = lambda x: pcy_hash(len(buckets), x)
-                
                 hash_indices = np.apply_along_axis(hash_tuple,1,canidates)
-                np.savetxt(
-                    fname='hash_indices.txt',
-                    X=hash_indices,
-                    fmt='%i',
-                    delimiter=',',
-                    encoding='utf-8')
+     
 
                 # we neeed the hash index where bitmap[index] ==  1
                 freq_buckets = np.argwhere(bitmap == 1)
                 hash_indices = np.intersect1d(freq_buckets,hash_indices)                
 
-                np.savetxt(
-                    fname='freq_hash_indices.txt',
-                    X=hash_indices,
-                    fmt='%i',
-                    delimiter=',',
-                    encoding='utf-8')
-                
                 check_hash_tuple = lambda x: hashto(x,hash_indices,len(buckets))
                 true_canidates = np.apply_along_axis(check_hash_tuple,1,canidates)
-                np.savetxt(
-                    fname='true_canidates.txt',
-                    X=true_canidates,
+
+                # get all rows with nonzero sum
+                sums = np.sum(true_canidates,axis=1)
+                true_canidates = true_canidates[np.where(sums > 0)]                      
+
+                np.apply_along_axis(addcounts,1,true_canidates)
+
+            # remove items from dictionary that do not meet support
+            for canidate,count in canidate_counts.items():
+                if count > s:
+                    canidate_counts.pop(canidate)
+
+            true_frequent = np.zeros(shape=len(canidate_counts.keys()),j)
+            true_canidates = canidate_counts.keys()
+            for k in range(len(true_canidates)):
+                true_frequent[k] = np.array(true_canidates[k])
+            
+            np.savetxt(
+                    fname='true_frequent.txt',
+                    X=true_frequent,
                     fmt='%i',
                     delimiter=',',
                     encoding='utf-8')
                 break
 
-
-
-
-
-
-                
 
 
 if __name__ == '__main__':
