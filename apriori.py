@@ -135,13 +135,12 @@ def pcy(D,s,k):
 
                 np.apply_along_axis(addcounts,1,true_canidates)
 
-            L = []
-
             # remove items from dictionary that do not meet support
             for canidate,count in canidate_counts.items():
                 if count <= s:
                     L.append(canidate)
 
+            canidate_counts = None
             L = np.array(L)
 
             true_frequent = np.zeros(shape=(len(L),j))
