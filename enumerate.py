@@ -3,13 +3,14 @@ import numpy as np
 
 if __name__ == "__main__":
 
-    infile = 'data/baskets2017.txt'
-    outfile = 'data/basketsenum2017.txt'
+    infile = 'data/baskets13basketsperday.txt'
+    outfile = 'data/basketsenum13basketsperday.txt'
 
     L = np.loadtxt('data/stocklist.txt',delimiter=',',dtype=str)
     L = L[:,0]
     # D = np.zeros(shape=(8582,505),dtype=int)
-    D = np.zeros(shape=(1526,505),dtype=int)
+    # D = np.zeros(shape=(1526,505),dtype=int)
+    D = np.zeros(shape=(2834,505),dtype=int)
 
     @np.vectorize
     def enum(s):
