@@ -86,8 +86,10 @@ def pcy(D,s,k):
             j = (i // 2) + 2
             if len(true_frequent) < j: 
                 break # itemset mining converged
+
             buckets = np.zeros(
                 shape=(comb(len(true_frequent),j,exact=True) // 2), dtype=int)
+
             for r in range(rows):
                 print('count:%i' % (r))
 
@@ -106,9 +108,12 @@ def pcy(D,s,k):
                 hash_tuple = lambda x: pcy_hash(len(buckets), x)
                 hash_indices = np.apply_along_axis(hash_tuple,1,canidates)
                 increment_buckets(hash_indices)
+
             bitmap = np.where(buckets > s,1,0)
+
         else:
             j = (i // 2) + 1
+            canidate_counts = np.zeros(shape=(1,(j+1)))
             for r in range(rows):
                 print('count:%i' % (r))
                 basket = D[r,:]
@@ -124,10 +129,10 @@ def pcy(D,s,k):
                 hash_tuple = lambda x: pcy_hash(len(buckets), x)
                 hash_indices = np.apply_along_axis(hash_tuple,1,canidates)
      
-
                 # we neeed the hash index where bitmap[index] ==  1
                 freq_buckets = np.argwhere(bitmap == 1)
-                hash_indices = np.intersect1d(freq_buckets,hash_indices)                
+                # frequent hashed indices   
+                hash_indices = np.intersect1d(freq_buckets,hash_indices)             
 
                 check_hash_tuple = lambda x: hashto(x,hash_indices,len(buckets))
                 true_canidates = np.apply_along_axis(check_hash_tuple,1,canidates)
@@ -139,13 +144,18 @@ def pcy(D,s,k):
                 if len(true_canidates) == 0:
                     continue                      
 
-                canidate_counts = np.zeros(shape=(1,(j+1)))
-
                 np.apply_along_axis(addcounts,1,true_canidates)
 
+            outfile = 'canidate_counts_%i.txt' % (j)
+            np.savetxt(
+                    fname=outfile,
+                    X=canidate_counts,
+                    fmt='%i',
+                    delimiter=',',
+                    encoding='utf-8')
+
             filter_results = np.argwhere(canidate_counts[:,-1] >= s).flatten()
-            true_frequent = canidate_counts[filter_results]            
-            canidate_counts = None
+            true_frequent = canidate_counts[filter_results] 
 
             outfile = 'true_frequent_%i.txt' % (j)
             np.savetxt(
@@ -154,6 +164,8 @@ def pcy(D,s,k):
                     fmt='%i',
                     delimiter=',',
                     encoding='utf-8')
+                       
+            canidate_counts = None
 
 
 if __name__ == '__main__':
@@ -161,4 +173,4 @@ if __name__ == '__main__':
     # are 70 percent of the days in the last five years
     D = np.loadtxt('data/basketsenum2017.txt',dtype=int,delimiter=',')
     D = sp.csr_matrix(D)
-    pcy(D,186,3)
+    pcy(D,175,3)
