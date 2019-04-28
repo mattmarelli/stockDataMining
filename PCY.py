@@ -145,10 +145,10 @@ def pcy(D,s,k):
             canidate_counts = {}
             L = np.array(L)
 
-            true_frequent = np.zeros(shape=(len(L),j))
+            true_frequent = np.zeros(shape=(len(L),j), dtype=int)
             for k in range(len(L)):
                 true_frequent[k] = np.array(L[k])
-            
+
             outfile = 'true_frequent_%i.txt' % (j)
             np.savetxt(
                     fname=outfile,
