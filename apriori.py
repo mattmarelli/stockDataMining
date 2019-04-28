@@ -128,7 +128,10 @@ def pcy(D,s,k):
 
                 # get all rows with nonzero sum
                 sums = np.sum(true_canidates,axis=1)
-                true_canidates = true_canidates[np.where(sums > 0)]                      
+                true_canidates = true_canidates[np.where(sums > 0)]
+
+                if len(true_canidates) == 0:
+                    continue                      
 
                 np.apply_along_axis(addcounts,1,true_canidates)
 
@@ -150,8 +153,6 @@ def pcy(D,s,k):
                     fmt='%i',
                     delimiter=',',
                     encoding='utf-8')
-            break
-
 
 
 if __name__ == '__main__':
