@@ -52,7 +52,7 @@ def pcy(D,s,k):
     bucket_size = comb(cols,2) // 2
     true_frequent = np.arange(1,cols+1)
     j = 1
-    canidate_counts = None
+    canidate_counts = np.zeros(shape=(1,(j+1)))
 
     # increments buckets given
     # an array of hash values
