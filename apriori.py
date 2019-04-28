@@ -77,7 +77,6 @@ def pcy(D,s,k):
             temp[0][0:j] = x
             temp[0][-1] = 1
             S = np.concatenate((S, temp),axis=0)
-        return S
 
     # loop through finding frequent 
     # k-tuples of support s
@@ -153,7 +152,7 @@ def pcy(D,s,k):
                     continue                      
 
                 updatecounts = lambda x: addcounts(canidate_counts,x)
-                candidate_counts = np.apply_along_axis(updatecounts,1,true_canidates)
+                np.apply_along_axis(updatecounts,1,true_canidates)
 
             outfile = 'canidate_counts_%i.txt' % (j)
             np.savetxt(
@@ -182,7 +181,7 @@ if __name__ == '__main__':
     # are 70 percent of the days in the last five years
     D = np.loadtxt('data/basketsenum2017.txt',dtype=int,delimiter=',')
     print(D.shape)
-    D = D[0:56,]
+    D = D[0:210,]
     print(D.shape)
     D = sp.csr_matrix(D)
-    pcy(D,3,2)
+    pcy(D,15,3)
