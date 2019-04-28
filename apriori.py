@@ -51,7 +51,8 @@ def pcy(D,s,k):
     bitmap = None
     bucket_size = comb(cols,2) // 2
     true_frequent = np.arange(1,cols+1)
-    canidate_counts = {}
+    j = 1
+    canidate_counts = None
 
     # increments buckets given
     # an array of hash values
@@ -68,10 +69,15 @@ def pcy(D,s,k):
             return np.zeros(shape=T.shape)
 
     def addcounts(x):
-        if canidate_counts.get(tuple(x)) != None:
-            canidate_counts[tuple(x)] += 1
+        result = np.where((A[:,0:j] == tuple(x)).all(axis=1))
+        if len(result[0]) > 0:
+            index = result[0][0]
+            canidate_counts[index][-1] += 1
         else:
-            canidate_counts[tuple(x)] = 1        
+            temp = np.zeros(shape=(1,j+1))
+            temp[0][0:j] = x
+            temp[0][-1] = 1
+            np.concatenate((canidate_counts, temp),axis=0)
 
     # loop through finding frequent 
     # k-tuples of support s
@@ -133,22 +139,15 @@ def pcy(D,s,k):
                 if len(true_canidates) == 0:
                     continue                      
 
+                canidate_counts = np.zeros(shape=(1,(j+1)))
+
                 np.apply_along_axis(addcounts,1,true_canidates)
 
-            # remove items from dictionary that do not meet support
-            for canidate,count in canidate_counts.items():
-                if count <= s:
-                    L.append(canidate)
-
+            filter_results = np.argwhere(A[:,-1] >= s).flatten()
+            true_frequent = canidate_counts[filter_results]            
             canidate_counts = None
-            L = np.array(L)
 
-            true_frequent = np.zeros(shape=(len(L),j))
-            for k in range(len(L)):
-                true_frequent[k] = np.array(L[k])
-            
             outfile = 'true_frequent_%i.txt' % (j)
-            canidate_counts = {}
             np.savetxt(
                     fname=outfile,
                     X=true_frequent,
@@ -162,4 +161,4 @@ if __name__ == '__main__':
     # are 70 percent of the days in the last five years
     D = np.loadtxt('data/basketsenum2017.txt',dtype=int,delimiter=',')
     D = sp.csr_matrix(D)
-    pcy(D,152,3)
+    pcy(D,186,3)
