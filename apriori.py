@@ -182,7 +182,7 @@ if __name__ == '__main__':
     # are 70 percent of the days in the last five years
     D = np.loadtxt('data/basketsenum2017.txt',dtype=int,delimiter=',')
     print(D.shape)
-    D = D[0:210,]
+    D = D[0:56,]
     print(D.shape)
     D = sp.csr_matrix(D)
-    pcy(D,15,3)
+    pcy(D,3,2)
