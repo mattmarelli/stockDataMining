@@ -69,7 +69,7 @@ def pcy(D,s,k):
             return np.zeros(shape=T.shape)
 
     def addcounts(x):
-        result = np.where((A[:,0:j] == tuple(x)).all(axis=1))
+        result = np.where((canidate_counts[:,0:j] == tuple(x)).all(axis=1))
         if len(result[0]) > 0:
             index = result[0][0]
             canidate_counts[index][-1] += 1
@@ -143,7 +143,7 @@ def pcy(D,s,k):
 
                 np.apply_along_axis(addcounts,1,true_canidates)
 
-            filter_results = np.argwhere(A[:,-1] >= s).flatten()
+            filter_results = np.argwhere(canidate_counts[:,-1] >= s).flatten()
             true_frequent = canidate_counts[filter_results]            
             canidate_counts = None
 
