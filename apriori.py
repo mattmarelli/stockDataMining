@@ -77,7 +77,7 @@ def pcy(D,s,k):
             temp = np.zeros(shape=(1,j+1))
             temp[0][0:j] = x
             temp[0][-1] = 1
-            np.concatenate((canidate_counts, temp),axis=0)
+            canidate_counts = np.concatenate((canidate_counts, temp),axis=0)
 
     # loop through finding frequent 
     # k-tuples of support s
@@ -110,6 +110,14 @@ def pcy(D,s,k):
                 increment_buckets(hash_indices)
 
             bitmap = np.where(buckets > s,1,0)
+
+            np.savetxt(
+                fname='bitmap.txt',
+                X=bitmap,
+                fmt='%i',
+                delimiter=',',
+                encoding='utf-8'
+            )
 
         else:
             j = (i // 2) + 1
@@ -172,5 +180,8 @@ if __name__ == '__main__':
     # set support to 860 such that stocks are similar to
     # are 70 percent of the days in the last five years
     D = np.loadtxt('data/basketsenum2017.txt',dtype=int,delimiter=',')
+    print(D.shape)
+    D = D[0:210,]
+    print(D.shape)
     D = sp.csr_matrix(D)
-    pcy(D,175,3)
+    pcy(D,15,3)
