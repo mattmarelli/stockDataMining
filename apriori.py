@@ -135,15 +135,18 @@ def pcy(D,s,k):
 
                 np.apply_along_axis(addcounts,1,true_canidates)
 
+            L = []
+
             # remove items from dictionary that do not meet support
             for canidate,count in canidate_counts.items():
-                if count > s:
-                    canidate_counts.pop(canidate)
+                if count <= s:
+                    L.append(canidate)
 
-            true_frequent = np.zeros(shape=(len(canidate_counts.keys()),j))
-            true_canidates = canidate_counts.keys()
-            for k in range(len(true_canidates)):
-                true_frequent[k] = np.array(true_canidates[k])
+            L = np.array(L)
+
+            true_frequent = np.zeros(shape=(len(L),j))
+            for k in range(len(L)):
+                true_frequent[k] = np.array(L[k])
             
             outfile = 'true_frequent_%i.txt' % (j)
 
