@@ -111,6 +111,8 @@ def pcy(D,s,k):
 
                 # generate canidate tuples
                 canidates = itemcombos(basket,j,true_frequent)
+                if len(canidates) < j:
+                    continue
 
                 # hash each canidate tuple in canidates and increment bucket
                 hash_tuple = lambda x: pcy_hash(len(buckets), x)
@@ -135,18 +137,20 @@ def pcy(D,s,k):
                 if count > s:
                     canidate_counts.pop(canidate)
 
-            true_frequent = np.zeros(shape=len(canidate_counts.keys()),j)
+            true_frequent = np.zeros(shape=(len(canidate_counts.keys()),j))
             true_canidates = canidate_counts.keys()
             for k in range(len(true_canidates)):
                 true_frequent[k] = np.array(true_canidates[k])
             
+            outfile = 'true_frequent_%i.txt' % (j)
+
             np.savetxt(
-                    fname='true_frequent.txt',
+                    fname=outfile,
                     X=true_frequent,
                     fmt='%i',
                     delimiter=',',
                     encoding='utf-8')
-                break
+            break
 
 
 
@@ -155,4 +159,4 @@ if __name__ == '__main__':
     # are 70 percent of the days in the last five years
     D = np.loadtxt('data/basketsenum2017.txt',dtype=int,delimiter=',')
     D = sp.csr_matrix(D)
-    pcy(D,152,2)
+    pcy(D,152,3)
