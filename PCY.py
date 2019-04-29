@@ -40,6 +40,8 @@ def itemcombos(A,n,S):
     combos = np.fromiter(combos,dtype=int)
     combos = combos.reshape((len(combos) // n),n)
     if n > 2:
+        if combos.size == 0:
+            return np.array([])
         combos = np.apply_along_axis(filter_tuple,1,combos)
     return combos
 
