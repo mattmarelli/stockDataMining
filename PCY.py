@@ -168,4 +168,4 @@ if __name__ == '__main__':
     D = D[0:390,]
     print(D.shape)
     D = sp.csr_matrix(D)
-    pcy(D,29,3)
+    pcy(D,29,10)
