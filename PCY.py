@@ -84,7 +84,7 @@ def pcy(D,s,k):
             if len(true_frequent) < j: 
                 break # itemset mining converged
             buckets = np.zeros(
-                shape=(comb(len(true_frequent) // ((j / 2)**6),j,exact=True) // 2), dtype=int)
+                shape=(comb(len(true_frequent) // ((j / 2)**10),j,exact=True) // 2), dtype=int)
             for r in range(rows):
                 print('count:%i' % (r))
 
